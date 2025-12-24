@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QUINA LIVE 2025 - FIX</title>
+    <title>QUINA LIVE 2025</title>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
         :root { --primary: #ffffff; --accent: #10b981; --bg-dark: #020617; --gold: #fbbf24; }
@@ -18,25 +18,28 @@
             backdrop-filter: blur(15px); padding: 30px; border-radius: 30px;
             border: 1px solid rgba(255, 255, 255, 0.15); text-align: center;
         }
-        .btn { padding: 16px 28px; border: none; border-radius: 50px; font-weight: 800; cursor: pointer; text-transform: uppercase; margin: 5px; }
+        .btn { padding: 15px 25px; border: none; border-radius: 50px; font-weight: 800; cursor: pointer; text-transform: uppercase; margin: 5px; transition: 0.3s; }
         .btn-primary { background: var(--primary); color: #1e3a8a; }
         .btn-accent { background: var(--accent); color: white; }
         .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 20px; }
         .cell { background: rgba(255, 255, 255, 0.1); border-radius: 12px; min-height: 80px; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; padding: 5px; cursor: pointer; font-weight: 700; border: 1px solid transparent; }
         .cell.marked { background: var(--accent); border-color: white; transform: scale(0.95); }
-        .room-code { font-size: 3rem; color: var(--accent); font-weight: 900; letter-spacing: 5px; }
-        .current-song-box { background: white; color: #1e3a8a; padding: 20px; border-radius: 15px; font-size: 1.8rem; font-weight: 900; margin: 15px 0; }
+        .room-code { font-size: 3.5rem; color: var(--accent); font-weight: 900; letter-spacing: 5px; margin: 10px 0; }
+        .current-song-box { background: white; color: #1e3a8a; padding: 25px; border-radius: 20px; font-size: 2rem; font-weight: 900; margin: 15px 0; }
         
-        /* OVERLAY GUANYADOR */
+        /* Seccions Admin */
+        .admin-panel { text-align: left; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 15px; margin-top: 15px; border: 1px solid rgba(255,255,255,0.1); }
+        .history-list { max-height: 100px; overflow-y: auto; font-size: 0.85rem; line-height: 1.6; }
+        .player-tag { background: rgba(255,255,255,0.2); padding: 5px 12px; border-radius: 15px; margin: 3px; display: inline-block; font-size: 0.8rem; }
+
         #winner-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(2, 6, 23, 0.98); display: none; flex-direction: column;
             align-items: center; justify-content: center; z-index: 9999;
         }
-        .winner-content { background: var(--gold); color: #020617; padding: 40px; border-radius: 30px; text-align: center; box-shadow: 0 0 50px var(--gold); }
-        
+        .winner-content { background: var(--gold); color: #020617; padding: 40px; border-radius: 30px; text-align: center; }
         .hidden { display: none; }
-        input { padding: 15px; border-radius: 50px; border: none; margin: 10px 0; width: 80%; text-align: center; font-size: 1rem; }
+        input { padding: 15px; border-radius: 50px; border: none; margin: 10px 0; width: 80%; text-align: center; }
     </style>
 </head>
 <body>
@@ -44,8 +47,8 @@
 <div id="winner-overlay">
     <div class="winner-content">
         <h1 style="font-size: 4rem; margin: 0;">🏆 QUINA!</h1>
-        <p id="winner-name" style="font-size: 2rem; font-weight: 900; margin: 10px 0;"></p>
-        <button class="btn" style="background: #020617; color: white;" onclick="closeWinner()">CONTINUAR PARTIDA</button>
+        <p id="winner-name" style="font-size: 2rem; font-weight: 900;"></p>
+        <button class="btn" style="background: #020617; color: white;" onclick="closeWinner()">CONTINUAR JUGANT</button>
     </div>
 </div>
 
@@ -58,26 +61,36 @@
 
     <div id="view-join" class="hidden">
         <h2>ENTRA EL CODI</h2>
-        <input type="number" id="join-room-id" placeholder="CODI DE 4 XIFRES">
+        <input type="number" id="join-room-id" placeholder="Ex: 1234">
         <input type="text" id="join-name" placeholder="EL TEU NOM">
         <button class="btn btn-primary" onclick="connectToAdmin()">ENTRAR</button>
     </div>
 
     <div id="view-card" class="hidden">
         <h2 id="player-display-name" style="margin:0;"></h2>
-        <div id="player-cartro-num" style="color: var(--accent); font-weight: bold;"></div>
+        <div id="player-cartro-num" style="color: var(--accent); font-weight: bold; font-size: 0.9rem;"></div>
         <div class="grid" id="grid-cartro"></div>
-        <button class="btn" style="margin-top:20px; opacity: 0.5; font-size: 0.7rem;" onclick="location.reload()">SORTIR</button>
+        <button class="btn btn-accent" style="margin-top:20px; font-size: 0.7rem;" onclick="resetCard()">NETEJAR CARTRÓ</button>
+        <button class="btn" style="margin-top:5px; opacity: 0.5; font-size: 0.7rem;" onclick="location.reload()">SORTIR</button>
     </div>
 
     <div id="view-admin" class="hidden">
-        <p>CODI SALA:</p>
         <div class="room-code" id="room-id-display">----</div>
         <div class="current-song-box" id="active-song">PREPARATS?</div>
         <button class="btn btn-accent" style="width: 100%;" onclick="drawSong()">🎶 SEGÜENT CANÇÓ</button>
-        <button class="btn" style="background: #1DB954; color: white; width: 100%;" onclick="openSpotify()">🎧 SPOTIFY</button>
-        <button class="btn" style="background: #ef4444; color: white; width: 100%; font-size: 0.7rem;" onclick="resetGame()">REINICIAR BOMBO</button>
-        <div id="player-list" style="margin-top:20px; font-size: 0.8rem; opacity: 0.8;"></div>
+        <button class="btn" style="background: #1DB954; color: white; width: 100%;" onclick="openSpotify()">🎧 OBRIR SPOTIFY</button>
+        
+        <div class="admin-panel">
+            <strong>JUGADORS (<span id="player-count">0</span>):</strong>
+            <div id="player-list" style="margin-top:5px;"></div>
+        </div>
+
+        <div class="admin-panel">
+            <strong>HISTORIAL:</strong>
+            <div id="history-list" class="history-list">Encara no ha sortit res.</div>
+        </div>
+        
+        <button class="btn" style="background: #ef4444; color: white; width: 100%; margin-top: 15px; font-size: 0.7rem;" onclick="resetGame()">REINICIAR PARTIDA</button>
     </div>
 </div>
 
@@ -97,7 +110,7 @@
         totsElsCartrons.push(shuffled.slice(0, 9));
     }
 
-    let bombo = [...LLISTA_CANCONS], peer, conn, roomID, currentSong = "", canWin = true;
+    let bombo = [...LLISTA_CANCONS], sortides = [], connectedPlayers = [], peer, conn, roomID, currentSong = "";
 
     function showView(id) {
         document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden'));
@@ -110,7 +123,11 @@
         peer.on('open', () => { document.getElementById('room-id-display').innerText = roomID; showView('view-admin'); });
         peer.on('connection', (c) => {
             c.on('data', (data) => {
-                if(data.type === 'join') c.send({type: 'welcome', cartroIdx: Math.floor(Math.random() * 200) + 1});
+                if(data.type === 'join') {
+                    if(!connectedPlayers.includes(data.name)) connectedPlayers.push(data.name);
+                    updateAdminUI();
+                    c.send({type: 'welcome', cartroIdx: Math.floor(Math.random() * 200) + 1});
+                }
                 if(data.type === 'winner') {
                     document.getElementById('winner-name').innerText = data.name.toUpperCase();
                     document.getElementById('winner-overlay').style.display = 'flex';
@@ -119,25 +136,25 @@
         });
     }
 
-    function closeWinner() { document.getElementById('winner-overlay').style.display = 'none'; }
-    
-    function resetGame() { 
-        if(confirm("Segur que vols buidar el historial i tornar a començar?")) {
-            bombo = [...LLISTA_CANCONS];
-            document.getElementById('active-song').innerText = "PARTIDA REINICIADA";
-        }
+    function updateAdminUI() {
+        document.getElementById('player-count').innerText = connectedPlayers.length;
+        document.getElementById('player-list').innerHTML = connectedPlayers.map(p => `<span class="player-tag">👤 ${p}</span>`).join('');
+        document.getElementById('history-list').innerHTML = sortides.length > 0 ? sortides.join(", ") : "Esperant cançons...";
     }
 
     function drawSong() {
         if(bombo.length === 0) return alert("Fi!");
         currentSong = bombo.splice(Math.floor(Math.random() * bombo.length), 1)[0];
+        sortides.unshift(currentSong);
         document.getElementById('active-song').innerText = currentSong;
+        updateAdminUI();
     }
 
-    function openSpotify() { 
-        if(currentSong) window.location.href = `spotify:search:${encodeURIComponent(currentSong)}`; 
-    }
+    function openSpotify() { if(currentSong) window.location.href = `spotify:search:${encodeURIComponent(currentSong)}`; }
+    function closeWinner() { document.getElementById('winner-overlay').style.display = 'none'; }
+    function resetGame() { if(confirm("Reiniciar tot?")) location.reload(); }
 
+    // --- JUGADOR ---
     function connectToAdmin() {
         const id = document.getElementById('join-room-id').value;
         const name = document.getElementById('join-name').value;
@@ -145,11 +162,11 @@
         peer.on('open', () => {
             conn = peer.connect('QUINA-LIVE-' + id);
             conn.on('open', () => conn.send({type: 'join', name: name}));
-            conn.on('data', (data) => { if(data.type === 'welcome') renderPlayerCard(data.cartroIdx, name); });
+            conn.on('data', (data) => { if(data.type === 'welcome') renderCard(data.cartroIdx, name); });
         });
     }
 
-    function renderPlayerCard(n, name) {
+    function renderCard(n, name) {
         document.getElementById('player-display-name').innerText = name.toUpperCase();
         document.getElementById('player-cartro-num').innerText = "CARTRÓ #" + n;
         const grid = document.getElementById('grid-cartro');
@@ -159,13 +176,15 @@
             cell.className = 'cell'; cell.innerText = c;
             cell.onclick = () => {
                 cell.classList.toggle('marked');
-                if(document.querySelectorAll('.cell.marked').length === 9) {
-                    conn.send({type: 'winner', name: name});
-                }
+                if(document.querySelectorAll('.cell.marked').length === 9) conn.send({type: 'winner', name: name});
             };
             grid.appendChild(cell);
         });
         showView('view-card');
+    }
+
+    function resetCard() {
+        document.querySelectorAll('.cell').forEach(c => c.classList.remove('marked'));
     }
 </script>
 </body>
