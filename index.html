@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quina Musical 2025</title>
+    <style>
+        /* Estils Generals i Fons Modern */
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            /* Blau modern amb degradats a les cantonades */
+            background: radial-gradient(circle at top left, #2c3e50, transparent 40%),
+                        radial-gradient(circle at bottom right, #2980b9, transparent 40%),
+                        #1a2a6c;
+            background-attachment: fixed;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 800px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-bottom: 25px;
+            text-transform: uppercase;
+        }
+
+        /* Botons Moderns */
+        .btn {
+            padding: 15px 25px;
+            border: none;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            margin: 10px;
+            display: inline-block;
+        }
+
+        .btn-primary { background: #fff; color: #1a2a6c; }
+        .btn-primary:hover { transform: scale(1.05); box-shadow: 0 0 20px rgba(255,255,255,0.4); }
+        
+        .btn-spotify { 
+            background: #1DB954; 
+            color: white; 
+            text-decoration: none; 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 10px;
+        }
+
+        /* Inputs */
+        input {
+            padding: 12px 20px;
+            border-radius: 25px;
+            border: none;
+            margin: 10px 0;
+            width: 100%;
+            max-width: 300px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        /* Disseny Cartró Horitzontal Responsive */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin: 20px auto;
+        }
+
+        /* Quan el mòbil està horitzontal, fem que les cel·les no siguin tan altes */
+        @media (orientation: landscape) {
+            .grid { grid-template-columns: repeat(5, 1fr); } /* Més columnes si és molt ample */
+            .container { padding: 15px; }
+            h1 { margin-bottom: 10px; font-size: 1.2rem; }
+        }
+
+        .cell {
+            background: rgba(255, 255, 255, 0.15);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            padding: 15px 5px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 60px;
+            transition: 0.2s;
+        }
+
+        .cell.marked {
+            background: #03dac6;
+            color: #1a2a6c;
+            border-color: white;
+            transform: scale(0.95);
+        }
+
+        /* Administrador */
+        .current-song-box {
+            background: rgba(255, 255, 255, 0.9);
+            color: #1a2a6c;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+            font-size: 2rem;
+            font-weight: 900;
+        }
+
+        .history {
+            text-align: left;
+            background: rgba(0,0,0,0.2);
+            padding: 15px;
+            border-radius: 10px;
+            max-height: 100px;
+            overflow-y: auto;
+            font-weight: 600;
+        }
+
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="view-home">
+        <h1>QUINA 2025</h1>
+        <button class="btn btn-primary" onclick="showView('view-player-setup')">JUGADOR</button>
+        <button class="btn" style="background: rgba(255,255,255,0.2); color: white;" onclick="showView('view-admin')">ORGANITZADOR</button>
+    </div>
+
+    <div id="view-player-setup" class="hidden">
+        <h2>ENTRA EL TEU CARTRÓ</h2>
+        <input type="text" id="player-name" placeholder="EL TEU NOM"><br>
+        <input type="number" id="cartro-num" placeholder="NÚMERO DE CARTRÓ (1-200)"><br>
+        <button class="btn btn-primary" onclick="initPlayer()">COMENÇAR</button>
+    </div>
+
+    <div id="view-card" class="hidden">
+        <h2 id="display-info" style="margin:0;"></h2>
+        <div class="grid" id="grid-cartro"></div>
+        <button class="btn" style="font-size: 0.7rem; opacity: 0.6;" onclick="location.reload()">SORTIR</button>
+    </div>
+
+    <div id="view-admin" class="hidden">
+        <h2>PANELL DE CONTROL</h2>
+        <div class="current-song-box" id="active-song">---</div>
+        
+        <div id="spotify-container" class="hidden">
+            <a id="spotify-link" href="#" target="_blank" class="btn btn-spotify">
+                <span>OBRIR A SPOTIFY</span>
+            </a>
+        </div>
+
+        <button class="btn btn-primary" onclick="drawSong()" style="background: #2ecc71; color: white;">TREURE CANÇÓ</button>
+        
+        <div style="margin-top:20px;">
+            <p>ÚLTIMES CANÇONS:</p>
+            <div id="history-list" class="history"></div>
+        </div>
+        <button class="btn" onclick="showView('view-home')">TORNAR</button>
+    </div>
+</div>
+
+<script>
+    // CARTRONS (Pots enganxar els 200 aquí)
+    const CARTRONS = [
+        ["Saturday Night", "Danza Kunduro", "Hay que venir al sur", "Pedro", "Berghain", "No m'estima +", "Rehab", "Me colé en una fiesta", "Todo de ti"],
+        ["Espresso Macchiato", "Rehab", "Berghain", "No m'estima +", "Si tothom calla", "Daddy Cool", "Tandem", "Saturday Night", "Sofia"],
+        ["No m'estima +", "Tàndem", "Abracadabra", "Todo de ti", "Saturday Night", "Viva la Vida", "Shape of you", "Sweet Caroline", "Nuevayol"],
+        ["Todo de ti", "The Look", "It's Not Usual", "YMCA", "Sofia", "Abracadabra", "Hay que venir al sur", "Shape of you", "No m'estima +"]
+        // ... afegeix-ne tants com vulguis
+    ];
+
+    const TOTES_LES_CANCONS = [...new Set(CARTRONS.flat())];
+    let bombo = [...TOTES_LES_CANCONS];
+    let sortides = [];
+
+    function showView(viewId) {
+        document.querySelectorAll('.container > div').forEach(div => div.classList.add('hidden'));
+        document.getElementById(viewId).classList.remove('hidden');
+    }
+
+    function initPlayer() {
+        const nom = document.getElementById('player-name').value;
+        const num = parseInt(document.getElementById('cartro-num').value);
+        if(!nom || isNaN(num) || num < 1 || num > CARTRONS.length) return alert("Dades incorrectes");
+
+        document.getElementById('display-info').innerText = `${nom} (Nº${num})`;
+        const grid = document.getElementById('grid-cartro');
+        grid.innerHTML = '';
+
+        CARTRONS[num-1].forEach(c => {
+            const cell = document.createElement('div');
+            cell.className = 'cell';
+            cell.innerText = c;
+            cell.onclick = () => cell.classList.toggle('marked');
+            grid.appendChild(cell);
+        });
+        showView('view-card');
+    }
+
+    function drawSong() {
+        if (bombo.length === 0) return alert("Fi de la partida");
+        const idx = Math.floor(Math.random() * bombo.length);
+        const canço = bombo.splice(idx, 1)[0];
+        sortides.unshift(canço);
+        
+        document.getElementById('active-song').innerText = canço;
+        document.getElementById('history-list').innerHTML = sortides.join(", ");
+
+        // Lògica de Spotify: genera link de cerca
+        const spotifyBtn = document.getElementById('spotify-container');
+        const spotifyLink = document.getElementById('spotify-link');
+        spotifyBtn.classList.remove('hidden');
+        spotifyLink.href = `https://open.spotify.com/search/${encodeURIComponent(canço)}`;
+    }
+</script>
+</body>
+</html>
