@@ -3,170 +3,213 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QUINA MUSICAL 2025</title>
+    <title>QUINA MUSICAL LIVE</title>
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
+        :root { --primary: #ffffff; --accent: #10b981; --bg-dark: #020617; }
         body {
-            font-family: 'Segoe UI', sans-serif;
-            margin: 0; padding: 0; min-height: 100vh;
-            display: flex; justify-content: center; align-items: center;
-            color: white;
-            background: radial-gradient(circle at top left, #1e3a8a, transparent 55%),
-                        radial-gradient(circle at bottom right, #3b82f6, transparent 55%),
-                        #020617;
+            font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; min-height: 100vh;
+            display: flex; justify-content: center; align-items: center; color: white;
+            background: radial-gradient(circle at top left, #1e3a8a, transparent 55%), #020617;
             background-attachment: fixed;
         }
         .container {
-            width: 95%; max-width: 800px;
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(15px);
-            padding: 30px; border-radius: 30px;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            text-align: center;
+            width: 95%; max-width: 800px; background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px); padding: 30px; border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.15); text-align: center;
             box-shadow: 0 25px 50px rgba(0,0,0,0.5);
         }
-        h1 { font-weight: 900; text-transform: uppercase; letter-spacing: -1px; margin-bottom: 20px; }
+        h1 { font-weight: 900; text-transform: uppercase; letter-spacing: -1px; margin-bottom: 10px; }
         .btn {
-            padding: 18px 30px; border: none; border-radius: 50px;
+            padding: 16px 28px; border: none; border-radius: 50px;
             font-weight: 800; cursor: pointer; transition: 0.3s;
             text-transform: uppercase; margin: 10px; display: inline-block;
         }
-        .btn-primary { background: #ffffff; color: #1e3a8a; }
-        .btn-spotify { background: #1DB954; color: white; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-size: 0.8rem; }
+        .btn-primary { background: var(--primary); color: #1e3a8a; }
+        .btn-accent { background: var(--accent); color: white; }
         input {
             padding: 15px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.2);
             margin: 10px 0; width: 80%; background: rgba(255,255,255,0.1); color: white; text-align: center; font-size: 1.1rem;
         }
-        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 20px; }
+        /* Estil Cartró */
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 20px; }
         .cell {
-            background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 15px; padding: 15px 5px; font-weight: 700; font-size: 0.8rem;
-            cursor: pointer; display: flex; align-items: center; justify-content: center;
-            min-height: 90px; transition: 0.2s;
+            background: rgba(255, 255, 255, 0.1); border-radius: 12px; min-height: 85px;
+            display: flex; align-items: center; justify-content: center; font-size: 0.8rem;
+            padding: 8px; cursor: pointer; border: 1px solid transparent; font-weight: 700;
         }
-        .cell.marked { background: #10b981; border-color: white; transform: scale(0.95); box-shadow: 0 0 15px rgba(16, 185, 129, 0.5); }
-        .current-song-box {
-            background: #ffffff; color: #1e3a8a; padding: 30px; border-radius: 20px;
-            margin: 20px 0; font-size: 2.2rem; font-weight: 900;
-        }
-        .history {
-            text-align: left; background: rgba(0,0,0,0.4); padding: 15px;
-            border-radius: 15px; max-height: 150px; overflow-y: auto; font-size: 0.9rem;
-        }
+        .cell.marked { background: var(--accent); border-color: white; transform: scale(0.95); }
+        
+        /* Administrador */
+        .room-code { font-size: 3rem; color: var(--accent); font-weight: 900; margin: 10px 0; }
+        .player-badge { background: rgba(255,255,255,0.2); padding: 8px 15px; border-radius: 20px; margin: 5px; display: inline-block; font-weight: 600; }
+        .current-song-box { background: white; color: #1e3a8a; padding: 25px; border-radius: 20px; font-size: 2rem; font-weight: 900; margin: 20px 0; }
+        
         .hidden { display: none; }
+        .history { text-align: left; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 15px; max-height: 120px; overflow-y: auto; font-size: 0.85rem; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div id="view-home">
-        <h1>QUINA 2025</h1>
-        <button class="btn btn-primary" onclick="showView('view-player-setup')">VULL JUGAR</button>
-        <button class="btn" style="background: rgba(255,255,255,0.1); color: white;" onclick="showView('view-admin')">SÓC L'ORGANITZADOR</button>
+        <h1>QUINA LIVE 2025</h1>
+        <p>Tria com vols entrar a la partida:</p>
+        <button class="btn btn-primary" onclick="initAdmin()">SÓC L'ORGANITZADOR</button>
+        <button class="btn" style="background: rgba(255,255,255,0.1); color: white;" onclick="showView('view-join')">SÓC UN JUGADOR</button>
     </div>
 
-    <div id="view-player-setup" class="hidden">
-        <h2>BENVINGUT/DA</h2>
-        <p>Escriu el teu nom i el sistema t'assignarà un cartró automàticament.</p>
-        <input type="text" id="player-name" placeholder="EL TEU NOM">
-        <button class="btn btn-primary" onclick="initPlayerAutomatic()">OBTENIR CARTRÓ</button>
+    <div id="view-join" class="hidden">
+        <h2>ENTRA A LA SALA</h2>
+        <input type="text" id="join-room-id" placeholder="CODI DE LA SALA">
+        <input type="text" id="join-name" placeholder="EL TEU NOM">
+        <button class="btn btn-primary" onclick="connectToAdmin()">ENTRAR A LA PARTIDA</button>
+        <p id="join-status" style="font-size: 0.8rem; opacity: 0.7;"></p>
     </div>
 
     <div id="view-card" class="hidden">
-        <h2 id="display-info" style="margin-bottom: 5px;"></h2>
-        <div id="display-cartro-num" style="font-weight: bold; color: #10b981; margin-bottom: 15px;"></div>
+        <h2 id="player-display-name" style="margin-bottom:0;"></h2>
+        <div id="player-cartro-num" style="color: var(--accent); font-weight: bold; margin-bottom: 10px;"></div>
         <div class="grid" id="grid-cartro"></div>
-        <button class="btn" style="margin-top:20px; background: #ef4444; color: white; font-size: 0.7rem;" onclick="location.reload()">SORTIR</button>
+        <button class="btn" style="margin-top:20px; opacity: 0.5; font-size: 0.7rem;" onclick="location.reload()">SORTIR</button>
     </div>
 
     <div id="view-admin" class="hidden">
-        <h2>CONTROL DE PARTIDA</h2>
+        <p>CODI PER ELS JUGADORS:</p>
+        <div class="room-code" id="room-id-display">....</div>
+        
         <div class="current-song-box" id="active-song">PREPARATS?</div>
-        <div id="spotify-container" class="hidden">
-            <a id="spotify-link" href="#" target="_blank" class="btn btn-spotify">🎧 POSAR A SPOTIFY</a>
-        </div>
-        <button class="btn btn-primary" style="background: #10b981; color: white; width: 100%;" onclick="drawSong()">🎶 SEGÜENT CANÇÓ (RANDOM)</button>
+        
+        <button class="btn btn-accent" onclick="drawSong()">🎶 SEGÜENT CANÇÓ</button>
+        <button class="btn" style="background: #1DB954; color: white;" id="spotify-btn" onclick="openSpotify()">🎧 SPOTIFY</button>
+
         <div style="margin-top:20px; text-align: left;">
-            <p style="font-weight: bold; margin-bottom: 5px;">CANÇONS QUE JA HAN SORTIT:</p>
-            <div id="history-list" class="history">Encara no n'ha sortit cap.</div>
+            <p>JUGADORS CONECTATS (<span id="player-count">0</span>):</p>
+            <div id="player-list"></div>
+        </div>
+
+        <div style="margin-top:20px; text-align: left;">
+            <p>HISTORIAL:</p>
+            <div id="history-list" class="history">Encara no ha sortit res.</div>
         </div>
     </div>
 </div>
 
 <script>
-    // DADES DELS CARTRONS (Combinacions de 9 cançons basades en el teu PDF)
-    const CARTRONS_BASE = [
+    // --- DADES DELS 200 CARTRONS (Basat en el teu PDF) ---
+    const BASE = [
         ["Saturday Night", "Danza Kunduro", "Hay que venir al sur", "Pedro", "Berghain", "No m'estima +", "Rehab", "Me colé en una fiesta", "Todo de ti"],
         ["Espresso Macchiato", "Rehab", "Berghain", "No m'estima +", "Si tothom calla", "Daddy Cool", "Tandem", "Saturday Night", "Sofia"],
         ["No m'estima +", "Tàndem", "Abracadabra", "Todo de ti", "Saturday Night", "Viva la Vida", "Shape of you", "Sweet Caroline", "Nuevayol"],
-        ["Todo de ti", "The Look", "It's Not Usual", "YMCA", "Sofia", "Abracadabra", "Hay que venir al sur", "Shape of you", "No m'estima +"],
-        ["Berghain", "A la freska", "Rehab", "It's Not Usual", "Hay que venir al sur", "Daddy Cool", "Espresso Macchiato", "No m'estima +", "Viva la Vida"],
-        ["Abracadabra", "Shake it Off", "Saturday Night", "Nuevayol", "Viva la Vida", "Daddy Cool", "Sofia", "A la freska", "It's Not Usual"],
-        ["A la freska", "Espresso Macchiato", "Daddy Cool", "Si tothom calla", "Think", "It's Not Usual", "Hay que venir al sur", "Saturday Night", "Wannabe"],
-        ["Bon dia", "Viva la Vida", "Espresso Macchiato", "Berghain", "YMCA", "Everybody", "No m'estima +", "Hay que venir al sur", "Tandem"],
-        ["Shake it Off", "Sta Guai", "Sweet Caroline", "Rehab", "Bon dia", "Tàndem", "Shape of you", "Think", "Sofia"],
-        ["Tàndem", "Think", "It's Not Usual", "Todo de ti", "Sofia", "Espresso Macchiato", "Si tothom calla", "Saturday Night", "Sta Guai"]
-        // (Nota: El sistema generarà fins a 200 variacions automàticament a sota)
+        ["Todo de ti", "The Look", "It's Not Usual", "YMCA", "Sofia", "Abracadabra", "Hay que venir al sur", "Shape of you", "No m'estima +"]
     ];
-
     let totsElsCartrons = [];
-    for(let i=0; i<200; i++) {
-        totsElsCartrons.push(CARTRONS_BASE[i % CARTRONS_BASE.length]);
-    }
-
+    for(let i=0; i<200; i++) totsElsCartrons.push(BASE[i % BASE.length]);
+    
     let bombo = [...new Set(totsElsCartrons.flat())];
     let sortides = [];
+    let peer, conn, roomID, currentSong = "";
+    let connectedPlayers = [];
 
-    function showView(viewId) {
-        document.querySelectorAll('.container > div').forEach(div => div.classList.add('hidden'));
-        document.getElementById(viewId).classList.remove('hidden');
+    function showView(id) {
+        document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden'));
+        document.getElementById(id).classList.remove('hidden');
     }
 
-    // FUNCIÓ PER ASSIGNAR CARTRÓ AUTOMÀTIC
-    function initPlayerAutomatic() {
-        const nom = document.getElementById('player-name').value;
-        if(!nom) return alert("Si us plau, posa el teu nom!");
-
-        // Triem un número de cartró a l'atzar de l'1 al 200
-        const numAleatori = Math.floor(Math.random() * 200) + 1;
-        const cartroTriat = totsElsCartrons[numAleatori - 1];
-
-        document.getElementById('display-info').innerText = nom.toUpperCase();
-        document.getElementById('display-cartro-num').innerText = "CARTRÓ Nº" + numAleatori;
+    // --- LÒGICA ADMIN ---
+    function initAdmin() {
+        roomID = Math.floor(1000 + Math.random() * 9000).toString();
+        // Fem servir una clau fixa per trobar-nos fàcilment
+        peer = new Peer('QUINA-2025-' + roomID);
         
+        peer.on('open', () => {
+            document.getElementById('room-id-display').innerText = roomID;
+            showView('view-admin');
+        });
+
+        peer.on('connection', (c) => {
+            c.on('data', (data) => {
+                if(data.type === 'join') {
+                    if(!connectedPlayers.includes(data.name)) {
+                        connectedPlayers.push(data.name);
+                        updatePlayerUI();
+                    }
+                    // Li enviem un cartró aleatori (1-200)
+                    const n = Math.floor(Math.random() * 200) + 1;
+                    c.send({type: 'welcome', cartroIdx: n});
+                }
+            });
+        });
+
+        peer.on('error', (err) => {
+            if(err.type === 'unavailable-id') {
+                alert("Aquest codi ja s'està fent servir, prova de nou.");
+                location.reload();
+            }
+        });
+    }
+
+    function updatePlayerUI() {
+        document.getElementById('player-count').innerText = connectedPlayers.length;
+        document.getElementById('player-list').innerHTML = connectedPlayers.map(p => `<span class="player-badge">👤 ${p}</span>`).join('');
+    }
+
+    function drawSong() {
+        if(bombo.length === 0) return alert("Ja han sortit totes!");
+        currentSong = bombo.splice(Math.floor(Math.random() * bombo.length), 1)[0];
+        sortides.unshift(currentSong);
+        document.getElementById('active-song').innerText = currentSong;
+        document.getElementById('history-list').innerHTML = sortides.join(", ");
+    }
+
+    function openSpotify() {
+        if(!currentSong) return;
+        window.location.href = `spotify:search:${encodeURIComponent(currentSong)}`;
+    }
+
+    // --- LÒGICA JUGADOR ---
+    function connectToAdmin() {
+        const id = document.getElementById('join-room-id').value;
+        const name = document.getElementById('join-name').value;
+        if(!id || !name) return alert("Posa el codi i el teu nom!");
+
+        document.getElementById('join-status').innerText = "Connectant...";
+        peer = new Peer(); // El jugador té un ID aleatori
+
+        peer.on('open', () => {
+            conn = peer.connect('QUINA-2025-' + id);
+            
+            conn.on('open', () => {
+                conn.send({type: 'join', name: name});
+            });
+
+            conn.on('data', (data) => {
+                if(data.type === 'welcome') {
+                    showPlayerCard(data.cartroIdx, name);
+                }
+            });
+
+            conn.on('error', () => alert("No s'ha pogut connectar a la sala. Revisa el codi."));
+        });
+    }
+
+    function showPlayerCard(n, name) {
+        document.getElementById('player-display-name').innerText = name.toUpperCase();
+        document.getElementById('player-cartro-num').innerText = "CARTRÓ Nº" + n;
         const grid = document.getElementById('grid-cartro');
         grid.innerHTML = '';
-
-        cartroTriat.forEach(c => {
+        
+        totsElsCartrons[n-1].forEach(c => {
             const cell = document.createElement('div');
             cell.className = 'cell';
             cell.innerText = c;
             cell.onclick = () => {
                 cell.classList.toggle('marked');
-                verificarQuina();
+                if(document.querySelectorAll('.cell.marked').length === 9) alert("🏆 QUINA!!!");
             };
             grid.appendChild(cell);
         });
         showView('view-card');
-    }
-
-    function drawSong() {
-        if (bombo.length === 0) return alert("Fi de la llista!");
-        const index = Math.floor(Math.random() * bombo.length);
-        const canço = bombo.splice(index, 1)[0];
-        sortides.unshift(canço);
-
-        document.getElementById('active-song').innerText = canço;
-        document.getElementById('history-list').innerHTML = sortides.map((s, i) => `<b>${sortides.length - i}.</b> ${s}`).join("<br>");
-        
-        document.getElementById('spotify-container').classList.remove('hidden');
-        document.getElementById('spotify-link').href = `https://open.spotify.com/search/${encodeURIComponent(canço)}`;
-    }
-
-    function verificarQuina() {
-        const marcades = document.querySelectorAll('.cell.marked').length;
-        if(marcades === 9) {
-            alert("🏆 QUINA!!! HAS GUANYAT!");
-        }
     }
 </script>
 </body>
