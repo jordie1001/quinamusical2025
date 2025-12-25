@@ -3,76 +3,183 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QUINA 2025 PRO</title>
+    <title>QUINA MUSICAL 2025</title>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
-        :root { --primary: #ffffff; --accent: #10b981; --bg: #020617; --gold: #fbbf24; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: white; margin: 0; display: flex; justify-content: center; min-height: 100vh; }
-        .container { width: 95%; max-width: 600px; padding: 20px; text-align: center; }
-        .card { background: rgba(255,255,255,0.05); padding: 20px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px; }
-        .btn { padding: 15px 25px; border-radius: 50px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; margin: 5px; width: 100%; max-width: 300px; transition: 0.2s; }
-        .btn-primary { background: white; color: var(--bg); }
-        .btn-accent { background: var(--accent); color: white; }
-        .btn-spotify { background: #1DB954; color: white; }
-        .room-id { font-size: 3rem; font-weight: 900; color: var(--accent); letter-spacing: 5px; }
-        .current-song { background: white; color: var(--bg); padding: 20px; border-radius: 15px; font-size: 1.8rem; font-weight: 900; margin: 15px 0; }
-        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 15px; }
-        .cell { background: rgba(255,255,255,0.1); border-radius: 10px; min-height: 70px; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; padding: 5px; font-weight: bold; cursor: pointer; border: 1px solid transparent; }
-        .cell.marked { background: var(--accent); border-color: white; }
-        .history { text-align: left; font-size: 0.8rem; background: rgba(0,0,0,0.4); padding: 10px; border-radius: 10px; max-height: 80px; overflow-y: auto; }
-        #winner-overlay { position: fixed; inset: 0; background: rgba(2,6,23,0.98); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 999; }
+        :root { 
+            --primary: #ffffff; 
+            --accent: #10b981; 
+            --bg: #0f172a; 
+            --gold: #fbbf24;
+            --glass: rgba(255, 255, 255, 0.07);
+        }
+
+        body { 
+            font-family: 'Inter', 'Segoe UI', sans-serif; 
+            background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+            color: white; 
+            margin: 0; 
+            display: flex; 
+            flex-direction: column;
+            justify-content: center; 
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container { 
+            width: 90%; 
+            max-width: 500px; 
+            padding: 40px 20px; 
+            text-align: center;
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            border-radius: 32px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        /* TÍTOL */
+        h1 { 
+            font-size: 3rem; 
+            font-weight: 900; 
+            margin: 0; 
+            letter-spacing: -2px;
+            text-transform: uppercase;
+            line-height: 1;
+        }
+        .year { 
+            font-size: 1.2rem; 
+            font-weight: 300; 
+            opacity: 0.7; 
+            margin-top: 5px;
+            display: block;
+            letter-spacing: 4px;
+        }
+
+        /* BOTONS */
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 40px;
+            align-items: center;
+        }
+
+        .btn { 
+            padding: 18px 35px; 
+            border-radius: 16px; 
+            border: none; 
+            font-weight: 800; 
+            cursor: pointer; 
+            text-transform: uppercase; 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 100%;
+            max-width: 280px;
+            font-size: 1rem;
+            letter-spacing: 1px;
+        }
+
+        .btn-main { 
+            background: white; 
+            color: #0f172a;
+            box-shadow: 0 10px 15px -3px rgba(255, 255, 255, 0.1);
+        }
+        .btn-main:hover { transform: translateY(-3px); box-shadow: 0 20px 25px -5px rgba(255, 255, 255, 0.2); }
+
+        .btn-secondary { 
+            background: transparent; 
+            color: rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: 0.8rem;
+        }
+        .btn-secondary:hover { background: rgba(255, 255, 255, 0.05); color: white; border-color: white; }
+
+        /* GRID I ALTRES */
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 25px; }
+        .cell { 
+            background: rgba(255,255,255,0.05); border-radius: 12px; min-height: 80px; 
+            display: flex; align-items: center; justify-content: center; 
+            font-size: 0.75rem; padding: 8px; font-weight: bold; border: 1px solid rgba(255,255,255,0.1); 
+        }
+        .cell.marked { background: var(--accent); color: white; border-color: white; box-shadow: 0 0 20px rgba(16, 185, 129, 0.4); }
+
+        .room-id { font-size: 3.5rem; font-weight: 900; color: var(--accent); margin: 15px 0; }
+        
+        .footer-text {
+            margin-top: 40px;
+            font-size: 0.65rem;
+            opacity: 0.4;
+            letter-spacing: 1px;
+        }
+
+        #winner-overlay { 
+            position: fixed; inset: 0; background: rgba(2,6,23,0.95); 
+            display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; 
+        }
+
         .hidden { display: none; }
-        input { padding: 15px; border-radius: 50px; border: none; width: 80%; margin: 10px 0; text-align: center; }
+        input { 
+            padding: 16px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.2); 
+            width: 100%; max-width: 280px; background: rgba(0,0,0,0.2); color: white; 
+            text-align: center; font-size: 1rem; margin-bottom: 15px;
+        }
     </style>
 </head>
 <body>
 
 <div id="winner-overlay">
-    <div style="background: var(--gold); color: black; padding: 40px; border-radius: 30px; text-align: center;">
-        <h1 style="font-size: 3rem; margin: 0;">🏆 QUINA!</h1>
-        <p id="winner-name" style="font-size: 1.5rem; font-weight: 900;"></p>
-        <button class="btn" style="background: black; color: white;" onclick="document.getElementById('winner-overlay').style.display='none'">CONTINUAR</button>
+    <div style="background: var(--gold); color: black; padding: 40px; border-radius: 30px; text-align: center; box-shadow: 0 0 60px var(--gold);">
+        <h1 style="font-size: 4rem;">🏆 QUINA!</h1>
+        <p id="winner-name" style="font-size: 2rem; font-weight: 900; margin: 0;"></p>
+        <button class="btn btn-main" style="background: black; color: white; margin-top: 20px;" onclick="document.getElementById('winner-overlay').style.display='none'">TORNAR</button>
     </div>
 </div>
 
 <div class="container">
     <div id="view-home">
-        <h1>QUINA 2025</h1>
-        <button class="btn btn-primary" onclick="initAdmin()">ORGANITZADOR</button><br>
-        <button class="btn" style="background: #333; color: white;" onclick="showView('view-join')">JUGADOR</button>
+        <h1>QUINA MUSICAL</h1>
+        <span class="year">2025</span>
+        
+        <div class="btn-group">
+            <button class="btn btn-main" onclick="showView('view-join')">JUGADOR</button>
+            <button class="btn btn-secondary" onclick="initAdmin()">ORGANITZADOR</button>
+        </div>
     </div>
 
     <div id="view-join" class="hidden">
         <h2>ENTRA A LA SALA</h2>
-        <input type="number" id="join-room-id" placeholder="CODI DE 4 XIFRES">
-        <input type="text" id="join-name" placeholder="EL TEU NOM">
-        <button class="btn btn-primary" onclick="connectToAdmin()">ENTRAR</button>
+        <input type="number" id="join-room-id" placeholder="Codi de 4 xifres">
+        <input type="text" id="join-name" placeholder="El teu nom">
+        <button class="btn btn-main" onclick="connectToAdmin()">ENTRAR ARA</button>
+        <p onclick="location.reload()" style="cursor:pointer; opacity:0.5; font-size:0.8rem; margin-top:20px;">← Tornar</p>
     </div>
 
     <div id="view-card" class="hidden">
-        <h3 id="player-info" style="margin: 0;"></h3>
-        <div id="player-num" style="color: var(--accent); margin-bottom: 10px; font-size: 0.8rem;"></div>
+        <h3 id="player-info"></h3>
+        <div id="player-num" style="color: var(--accent); margin-bottom: 10px;"></div>
         <div class="grid" id="grid-cartro"></div>
-        <button class="btn btn-accent" style="margin-top: 15px;" onclick="resetCard()">NETEJAR CARTRÓ</button>
+        <button class="btn btn-secondary" style="margin-top: 25px;" onclick="resetCard()">Netejar cartró</button>
     </div>
 
     <div id="view-admin" class="hidden">
-        <div class="card">
-            <p style="margin: 0; font-size: 0.8rem;">CODI DE SALA</p>
-            <div class="room-id" id="display-room-id">----</div>
-            <div class="current-song" id="active-song">PREPARATS?</div>
-            <button class="btn btn-accent" onclick="drawSong()">🎶 TREURE CANÇÓ</button>
-            <button class="btn btn-spotify" onclick="openSpotify()">🎧 SPOTIFY</button>
+        <p style="margin:0; opacity:0.7;">CODI DE SALA</p>
+        <div class="room-id" id="display-room-id">----</div>
+        <div id="active-song" style="background:white; color:#0f172a; padding:20px; border-radius:16px; font-size:1.5rem; font-weight:900; margin:15px 0;">A PUNT?</div>
+        
+        <div class="btn-group">
+            <button class="btn btn-main" style="background:var(--accent); color:white;" onclick="drawSong()">🎶 TREURE CANÇÓ</button>
+            <button class="btn btn-main" style="background:#1DB954; color:white;" onclick="openSpotify()">🎧 SPOTIFY</button>
         </div>
-        <div class="card" style="text-align: left;">
-            <strong>HISTORIAL:</strong>
-            <div id="history-list" class="history"></div>
-        </div>
-        <div class="card" style="text-align: left;">
-            <strong>JUGADORS (<span id="p-count">0</span>):</strong>
-            <div id="p-list" style="font-size: 0.8rem; opacity: 0.7;"></div>
+        
+        <div style="margin-top:30px; text-align:left; font-size:0.8rem; border-top:1px solid rgba(255,255,255,0.1); padding-top:20px;">
+            <strong>HISTORIAL:</strong> <span id="history-list" style="opacity:0.7;">Cap cançó encara</span>
+            <br><br>
+            <strong>JUGADORS (<span id="p-count">0</span>):</strong> <span id="p-list" style="opacity:0.7;">Cap encara</span>
         </div>
     </div>
+
+    <div class="footer-text">e1001 - 2025</div>
 </div>
 
 <script>
@@ -97,7 +204,7 @@
 
     function initAdmin() {
         const id = Math.floor(1000 + Math.random() * 9000).toString();
-        peer = new Peer('QUINA-PRO-' + id);
+        peer = new Peer('QUINA-25-' + id);
         peer.on('open', () => { 
             document.getElementById('display-room-id').innerText = id; 
             showView('view-admin'); 
@@ -124,7 +231,7 @@
     }
 
     function drawSong() {
-        if(!bombo.length) return alert("Fi!");
+        if(!bombo.length) return alert("Fi de la llista!");
         currentSong = bombo.splice(Math.floor(Math.random()*bombo.length), 1)[0];
         sortides.unshift(currentSong);
         document.getElementById('active-song').innerText = currentSong;
@@ -139,7 +246,7 @@
         if(!rid || !name) return alert("Posa el codi i el nom");
         peer = new Peer();
         peer.on('open', () => {
-            conn = peer.connect('QUINA-PRO-' + rid);
+            conn = peer.connect('QUINA-25-' + rid);
             conn.on('open', () => conn.send({type: 'join', name: name}));
             conn.on('data', d => { if(d.type === 'welcome') renderPlayer(d.idx, name); });
         });
