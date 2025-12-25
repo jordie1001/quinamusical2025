@@ -39,7 +39,6 @@
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
 
-        /* TÍTOL */
         h1 { 
             font-size: 3rem; 
             font-weight: 900; 
@@ -57,7 +56,6 @@
             letter-spacing: 4px;
         }
 
-        /* BOTONS */
         .btn-group {
             display: flex;
             flex-direction: column;
@@ -78,14 +76,14 @@
             max-width: 280px;
             font-size: 1rem;
             letter-spacing: 1px;
+            text-decoration: none;
+            display: inline-block;
         }
 
         .btn-main { 
             background: white; 
             color: #0f172a;
-            box-shadow: 0 10px 15px -3px rgba(255, 255, 255, 0.1);
         }
-        .btn-main:hover { transform: translateY(-3px); box-shadow: 0 20px 25px -5px rgba(255, 255, 255, 0.2); }
 
         .btn-secondary { 
             background: transparent; 
@@ -93,16 +91,21 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
             font-size: 0.8rem;
         }
-        .btn-secondary:hover { background: rgba(255, 255, 255, 0.05); color: white; border-color: white; }
 
-        /* GRID I ALTRES */
+        .btn-spotify {
+            background: #1DB954;
+            color: white;
+            font-size: 0.9rem;
+            max-width: 320px; /* Una mica més ample pel text llarg */
+        }
+
         .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 25px; }
         .cell { 
             background: rgba(255,255,255,0.05); border-radius: 12px; min-height: 80px; 
             display: flex; align-items: center; justify-content: center; 
             font-size: 0.75rem; padding: 8px; font-weight: bold; border: 1px solid rgba(255,255,255,0.1); 
         }
-        .cell.marked { background: var(--accent); color: white; border-color: white; box-shadow: 0 0 20px rgba(16, 185, 129, 0.4); }
+        .cell.marked { background: var(--accent); color: white; border-color: white; }
 
         .room-id { font-size: 3.5rem; font-weight: 900; color: var(--accent); margin: 15px 0; }
         
@@ -129,7 +132,7 @@
 <body>
 
 <div id="winner-overlay">
-    <div style="background: var(--gold); color: black; padding: 40px; border-radius: 30px; text-align: center; box-shadow: 0 0 60px var(--gold);">
+    <div style="background: var(--gold); color: black; padding: 40px; border-radius: 30px; text-align: center;">
         <h1 style="font-size: 4rem;">🏆 QUINA!</h1>
         <p id="winner-name" style="font-size: 2rem; font-weight: 900; margin: 0;"></p>
         <button class="btn btn-main" style="background: black; color: white; margin-top: 20px;" onclick="document.getElementById('winner-overlay').style.display='none'">TORNAR</button>
@@ -140,7 +143,6 @@
     <div id="view-home">
         <h1>QUINA MUSICAL</h1>
         <span class="year">2025</span>
-        
         <div class="btn-group">
             <button class="btn btn-main" onclick="showView('view-join')">JUGADOR</button>
             <button class="btn btn-secondary" onclick="initAdmin()">ORGANITZADOR</button>
@@ -169,7 +171,7 @@
         
         <div class="btn-group">
             <button class="btn btn-main" style="background:var(--accent); color:white;" onclick="drawSong()">🎶 TREURE CANÇÓ</button>
-            <button class="btn btn-main" style="background:#1DB954; color:white;" onclick="openSpotify()">🎧 SPOTIFY</button>
+            <a id="spotify-link" href="https://open.spotify.com/playlist/1XBOgnvKTUstfXUoF090KP?si=WAXilHA_TN6INbLRzEMU2w&pi=05bW0uQPSTS5k&nd=1&dlsi=9981b11589d14167" target="_blank" class="btn btn-spotify">Anar a la llista Spotify</a>
         </div>
         
         <div style="margin-top:30px; text-align:left; font-size:0.8rem; border-top:1px solid rgba(255,255,255,0.1); padding-top:20px;">
@@ -237,8 +239,6 @@
         document.getElementById('active-song').innerText = currentSong;
         updateAdmin();
     }
-
-    function openSpotify() { if(currentSong) window.location.href=`spotify:search:${encodeURIComponent(currentSong)}`; }
 
     function connectToAdmin() {
         const rid = document.getElementById('join-room-id').value;
