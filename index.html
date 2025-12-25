@@ -8,7 +8,7 @@
     <style>
         :root { 
             --primary: #ffffff; --accent: #10b981; --bg: #0f172a; --gold: #fbbf24;
-            --glass: rgba(255, 255, 255, 0.07); --card-bg: rgba(15, 23, 42, 0.6);
+            --glass: rgba(255, 255, 255, 0.07);
         }
 
         body { 
@@ -42,15 +42,13 @@
             min-height: 100px; display: flex; align-items: center; justify-content: center;
         }
 
-        /* SIDEBAR / PANELS */
         .side-panel { display: flex; flex-direction: column; gap: 20px; }
         .stat-card {
             background: rgba(255,255,255,0.05); padding: 20px; border-radius: 20px;
             border: 1px solid rgba(255,255,255,0.1);
         }
 
-        /* HISTORIAL DISSENYAT */
-        .history-container { max-height: 300px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin-top: 10px; padding-right: 5px; }
+        .history-container { max-height: 300px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
         .history-item {
             background: rgba(255,255,255,0.05); padding: 12px 15px; border-radius: 12px;
             font-size: 0.85rem; border-left: 4px solid var(--accent);
@@ -58,32 +56,30 @@
         }
         .history-item:first-child { border-left-color: var(--gold); background: rgba(251, 191, 36, 0.1); }
 
-        /* PARTICIPANTS */
         .p-badge-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
         .p-badge {
             background: var(--accent); color: white; padding: 6px 14px; 
             border-radius: 50px; font-size: 0.8rem; font-weight: bold;
         }
-        .p-count-circle {
-            font-size: 2.5rem; font-weight: 900; color: var(--accent); display: block;
-        }
+        .p-count-circle { font-size: 2.5rem; font-weight: 900; color: var(--accent); }
 
-        /* ELEMENTS COMUNS */
         .btn { 
             padding: 18px 25px; border-radius: 16px; border: none; font-weight: 800; 
             cursor: pointer; text-transform: uppercase; width: 100%; transition: 0.3s;
+            text-decoration: none; display: flex; align-items: center; justify-content: center;
         }
-        .btn-draw { background: var(--accent); color: white; font-size: 1.1rem; }
-        .btn-spotify { background: #1DB954; color: white; margin-top: 10px; text-decoration: none; display: flex; align-items: center; justify-content: center; }
+        .btn-draw { background: var(--accent); color: white; font-size: 1.1rem; margin-bottom: 10px; }
+        .btn-spotify { background: #1DB954; color: white; }
         
-        .room-info-small { font-size: 0.8rem; opacity: 0.6; margin-top: 10px; }
+        .room-info-small { font-size: 0.8rem; opacity: 0.6; margin-top: 15px; }
         .hidden { display: none; }
         @keyframes slideIn { from { opacity: 0; transform: translateX(10px); } to { opacity: 1; transform: translateX(0); } }
 
-        /* ESTILS PANTALLA INICIAL REUTILITZATS */
         .hero-title { font-size: 3rem; font-weight: 900; text-transform: uppercase; margin: 0; }
         .hero-year { letter-spacing: 5px; opacity: 0.6; }
         .footer-text { margin-top: 40px; font-size: 0.65rem; opacity: 0.4; letter-spacing: 1px; }
+        
+        input { padding:15px; border-radius:10px; border:none; margin-bottom:10px; width:250px; text-align:center; }
     </style>
 </head>
 <body>
@@ -109,13 +105,12 @@
 
     <div id="view-admin" class="hidden">
         <div class="admin-layout">
-            
             <div class="main-card">
                 <div style="text-align: center; width: 100%;">
                     <span style="text-transform: uppercase; font-size: 0.7rem; letter-spacing: 2px; opacity: 0.6;">Cançó Actual</span>
                     <div class="song-display" id="active-song">---</div>
                     <button class="btn btn-draw" onclick="drawSong()">🎶 SEGÜENT CANÇÓ</button>
-                    <a id="spotify-link" href="https://open.spotify.com/playlist/1XBOgnvKTUstfXUoF090KP?si=WAXilHA_TN6INbLRzEMU2w&pi=05bW0uQPSTS5k&nd=1&dlsi=9981b11589d14167" target="_blank" class="btn btn-spotify">Anar a la llista Spotify</a>
+                    <a href="https://open.spotify.com/playlist/0jWTKZ0L03OXxDwl37tWL0?si=8dd66d20ecf34fce" target="_blank" class="btn btn-spotify">LLISTA SPOTIFY</a>
                     
                     <div class="room-info-small">
                         CODI DE SALA: <strong id="display-room-id" style="color:var(--accent)">----</strong>
@@ -129,33 +124,29 @@
                         <span style="font-weight: bold; font-size: 0.9rem;">PARTICIPANTS</span>
                         <span class="p-count-circle" id="p-count">0</span>
                     </div>
-                    <div class="p-badge-container" id="p-list">
-                        </div>
+                    <div class="p-badge-container" id="p-list"></div>
                 </div>
 
                 <div class="stat-card">
-                    <span style="font-weight: bold; font-size: 0.9rem;">HISTORIAL RECENT</span>
-                    <div class="history-container" id="history-list">
-                        <div style="opacity: 0.4; font-size: 0.8rem; padding: 10px;">Encara no ha sortit cap cançó...</div>
-                    </div>
+                    <span style="font-weight: bold; font-size: 0.9rem;">HISTORIAL</span>
+                    <div class="history-container" id="history-list"></div>
                 </div>
             </div>
-
         </div>
     </div>
 
     <div id="view-join" class="hidden">
         <h2>ENTRA A LA SALA</h2>
-        <input type="number" id="join-room-id" placeholder="Codi sala" style="padding:15px; border-radius:10px; border:none; margin-bottom:10px; width:250px; text-align:center;"><br>
-        <input type="text" id="join-name" placeholder="El teu nom" style="padding:15px; border-radius:10px; border:none; margin-bottom:20px; width:250px; text-align:center;"><br>
-        <button class="btn btn-draw" style="max-width:280px;" onclick="connectToAdmin()">ENTRAR ARA</button>
+        <input type="number" id="join-room-id" placeholder="Codi sala"><br>
+        <input type="text" id="join-name" placeholder="El teu nom"><br>
+        <button class="btn btn-draw" style="max-width:280px; margin: 0 auto;" onclick="connectToAdmin()">ENTRAR ARA</button>
     </div>
 
     <div id="view-card" class="hidden">
         <h3 id="player-info" style="margin:0"></h3>
         <div id="player-num" style="color:var(--accent); margin-bottom:15px;"></div>
         <div id="grid-cartro" style="display:grid; grid-template-columns: repeat(3, 1fr); gap:8px;"></div>
-        <button class="btn" style="background:rgba(255,255,255,0.1); color:white; margin-top:20px; font-size:0.7rem;" onclick="resetCard()">Netejar cartró</button>
+        <button class="btn" style="background:rgba(255,255,255,0.1); color:white; margin-top:20px; font-size:0.7rem;" onclick="location.reload()">SORTIR</button>
     </div>
 
     <div class="footer-text">e1001 - 2025</div>
@@ -206,7 +197,6 @@
     function updateAdmin() {
         document.getElementById('p-count').innerText = players.length;
         document.getElementById('p-list').innerHTML = players.map(p => `<span class="p-badge">${p}</span>`).join('');
-        
         const histHTML = sortides.map((s, i) => `<div class="history-item"><strong>#${sortides.length - i}</strong>: ${s}</div>`).join('');
         document.getElementById('history-list').innerHTML = histHTML || "Esperant...";
     }
@@ -247,8 +237,6 @@
         });
         showView('view-card');
     }
-
-    function resetCard() { location.reload(); }
 </script>
 </body>
 </html>
