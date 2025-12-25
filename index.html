@@ -7,178 +7,155 @@
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
         :root { 
-            --primary: #ffffff; 
-            --accent: #10b981; 
-            --bg: #0f172a; 
-            --gold: #fbbf24;
-            --glass: rgba(255, 255, 255, 0.07);
+            --primary: #ffffff; --accent: #10b981; --bg: #0f172a; --gold: #fbbf24;
+            --glass: rgba(255, 255, 255, 0.07); --card-bg: rgba(15, 23, 42, 0.6);
         }
 
         body { 
-            font-family: 'Inter', 'Segoe UI', sans-serif; 
-            background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
-            color: white; 
-            margin: 0; 
-            display: flex; 
-            flex-direction: column;
-            justify-content: center; 
-            align-items: center;
-            min-height: 100vh;
-            overflow-x: hidden;
+            font-family: 'Inter', sans-serif; background: #0f172a; color: white; 
+            margin: 0; min-height: 100vh; display: flex; justify-content: center; align-items: center;
         }
 
-        .container { 
-            width: 90%; 
-            max-width: 500px; 
-            padding: 40px 20px; 
-            text-align: center;
-            background: var(--glass);
-            backdrop-filter: blur(12px);
-            border-radius: 32px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        .container { width: 95%; max-width: 900px; padding: 20px; text-align: center; }
+
+        /* DISSENY ADMIN DASHBOARD */
+        .admin-layout {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+            text-align: left;
         }
 
-        h1 { 
-            font-size: 3rem; 
-            font-weight: 900; 
-            margin: 0; 
-            letter-spacing: -2px;
-            text-transform: uppercase;
-            line-height: 1;
-        }
-        .year { 
-            font-size: 1.2rem; 
-            font-weight: 300; 
-            opacity: 0.7; 
-            margin-top: 5px;
-            display: block;
-            letter-spacing: 4px;
+        @media (max-width: 768px) { .admin-layout { grid-template-columns: 1fr; } }
+
+        .main-card {
+            background: var(--glass); backdrop-filter: blur(10px);
+            padding: 30px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.1);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
 
-        .btn-group {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-top: 40px;
-            align-items: center;
+        .song-display {
+            background: white; color: #0f172a; width: 100%; padding: 40px 20px;
+            border-radius: 20px; font-size: 2.2rem; font-weight: 900;
+            text-align: center; margin: 20px 0; box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+            min-height: 100px; display: flex; align-items: center; justify-content: center;
         }
 
+        /* SIDEBAR / PANELS */
+        .side-panel { display: flex; flex-direction: column; gap: 20px; }
+        .stat-card {
+            background: rgba(255,255,255,0.05); padding: 20px; border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* HISTORIAL DISSENYAT */
+        .history-container { max-height: 300px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin-top: 10px; padding-right: 5px; }
+        .history-item {
+            background: rgba(255,255,255,0.05); padding: 12px 15px; border-radius: 12px;
+            font-size: 0.85rem; border-left: 4px solid var(--accent);
+            animation: slideIn 0.3s ease-out;
+        }
+        .history-item:first-child { border-left-color: var(--gold); background: rgba(251, 191, 36, 0.1); }
+
+        /* PARTICIPANTS */
+        .p-badge-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+        .p-badge {
+            background: var(--accent); color: white; padding: 6px 14px; 
+            border-radius: 50px; font-size: 0.8rem; font-weight: bold;
+        }
+        .p-count-circle {
+            font-size: 2.5rem; font-weight: 900; color: var(--accent); display: block;
+        }
+
+        /* ELEMENTS COMUNS */
         .btn { 
-            padding: 18px 35px; 
-            border-radius: 16px; 
-            border: none; 
-            font-weight: 800; 
-            cursor: pointer; 
-            text-transform: uppercase; 
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            width: 100%;
-            max-width: 280px;
-            font-size: 1rem;
-            letter-spacing: 1px;
-            text-decoration: none;
-            display: inline-block;
+            padding: 18px 25px; border-radius: 16px; border: none; font-weight: 800; 
+            cursor: pointer; text-transform: uppercase; width: 100%; transition: 0.3s;
         }
-
-        .btn-main { 
-            background: white; 
-            color: #0f172a;
-        }
-
-        .btn-secondary { 
-            background: transparent; 
-            color: rgba(255, 255, 255, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            font-size: 0.8rem;
-        }
-
-        .btn-spotify {
-            background: #1DB954;
-            color: white;
-            font-size: 0.9rem;
-            max-width: 320px; /* Una mica més ample pel text llarg */
-        }
-
-        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 25px; }
-        .cell { 
-            background: rgba(255,255,255,0.05); border-radius: 12px; min-height: 80px; 
-            display: flex; align-items: center; justify-content: center; 
-            font-size: 0.75rem; padding: 8px; font-weight: bold; border: 1px solid rgba(255,255,255,0.1); 
-        }
-        .cell.marked { background: var(--accent); color: white; border-color: white; }
-
-        .room-id { font-size: 3.5rem; font-weight: 900; color: var(--accent); margin: 15px 0; }
+        .btn-draw { background: var(--accent); color: white; font-size: 1.1rem; }
+        .btn-spotify { background: #1DB954; color: white; margin-top: 10px; text-decoration: none; display: flex; align-items: center; justify-content: center; }
         
-        .footer-text {
-            margin-top: 40px;
-            font-size: 0.65rem;
-            opacity: 0.4;
-            letter-spacing: 1px;
-        }
-
-        #winner-overlay { 
-            position: fixed; inset: 0; background: rgba(2,6,23,0.95); 
-            display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; 
-        }
-
+        .room-info-small { font-size: 0.8rem; opacity: 0.6; margin-top: 10px; }
         .hidden { display: none; }
-        input { 
-            padding: 16px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.2); 
-            width: 100%; max-width: 280px; background: rgba(0,0,0,0.2); color: white; 
-            text-align: center; font-size: 1rem; margin-bottom: 15px;
-        }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(10px); } to { opacity: 1; transform: translateX(0); } }
+
+        /* ESTILS PANTALLA INICIAL REUTILITZATS */
+        .hero-title { font-size: 3rem; font-weight: 900; text-transform: uppercase; margin: 0; }
+        .hero-year { letter-spacing: 5px; opacity: 0.6; }
+        .footer-text { margin-top: 40px; font-size: 0.65rem; opacity: 0.4; letter-spacing: 1px; }
     </style>
 </head>
 <body>
 
-<div id="winner-overlay">
+<div id="winner-overlay" style="position:fixed; inset:0; background:rgba(2,6,23,0.95); display:none; flex-direction:column; align-items:center; justify-content:center; z-index:1000;">
     <div style="background: var(--gold); color: black; padding: 40px; border-radius: 30px; text-align: center;">
-        <h1 style="font-size: 4rem;">🏆 QUINA!</h1>
-        <p id="winner-name" style="font-size: 2rem; font-weight: 900; margin: 0;"></p>
-        <button class="btn btn-main" style="background: black; color: white; margin-top: 20px;" onclick="document.getElementById('winner-overlay').style.display='none'">TORNAR</button>
+        <h1 style="font-size: 4rem; margin:0;">🏆 QUINA!</h1>
+        <p id="winner-name" style="font-size: 2.5rem; font-weight: 900;"></p>
+        <button class="btn" style="background: black; color: white; margin-top:20px; width:200px" onclick="document.getElementById('winner-overlay').style.display='none'">TANCAR</button>
     </div>
 </div>
 
 <div class="container">
+    
     <div id="view-home">
-        <h1>QUINA MUSICAL</h1>
-        <span class="year">2025</span>
-        <div class="btn-group">
-            <button class="btn btn-main" onclick="showView('view-join')">JUGADOR</button>
-            <button class="btn btn-secondary" onclick="initAdmin()">ORGANITZADOR</button>
+        <h1 class="hero-title">QUINA MUSICAL</h1>
+        <div class="hero-year">2025</div>
+        <div style="margin-top: 40px; display: flex; flex-direction: column; align-items: center; gap: 15px;">
+            <button class="btn" style="background:white; color:#0f172a; max-width:300px;" onclick="showView('view-join')">JUGADOR</button>
+            <button class="btn" style="background:transparent; color:rgba(255,255,255,0.5); border:1px solid rgba(255,255,255,0.2); max-width:200px; font-size:0.7rem;" onclick="initAdmin()">ORGANITZADOR</button>
+        </div>
+    </div>
+
+    <div id="view-admin" class="hidden">
+        <div class="admin-layout">
+            
+            <div class="main-card">
+                <div style="text-align: center; width: 100%;">
+                    <span style="text-transform: uppercase; font-size: 0.7rem; letter-spacing: 2px; opacity: 0.6;">Cançó Actual</span>
+                    <div class="song-display" id="active-song">---</div>
+                    <button class="btn btn-draw" onclick="drawSong()">🎶 SEGÜENT CANÇÓ</button>
+                    <a id="spotify-link" href="https://open.spotify.com/playlist/1XBOgnvKTUstfXUoF090KP?si=WAXilHA_TN6INbLRzEMU2w&pi=05bW0uQPSTS5k&nd=1&dlsi=9981b11589d14167" target="_blank" class="btn btn-spotify">Anar a la llista Spotify</a>
+                    
+                    <div class="room-info-small">
+                        CODI DE SALA: <strong id="display-room-id" style="color:var(--accent)">----</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="side-panel">
+                <div class="stat-card">
+                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                        <span style="font-weight: bold; font-size: 0.9rem;">PARTICIPANTS</span>
+                        <span class="p-count-circle" id="p-count">0</span>
+                    </div>
+                    <div class="p-badge-container" id="p-list">
+                        </div>
+                </div>
+
+                <div class="stat-card">
+                    <span style="font-weight: bold; font-size: 0.9rem;">HISTORIAL RECENT</span>
+                    <div class="history-container" id="history-list">
+                        <div style="opacity: 0.4; font-size: 0.8rem; padding: 10px;">Encara no ha sortit cap cançó...</div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 
     <div id="view-join" class="hidden">
         <h2>ENTRA A LA SALA</h2>
-        <input type="number" id="join-room-id" placeholder="Codi de 4 xifres">
-        <input type="text" id="join-name" placeholder="El teu nom">
-        <button class="btn btn-main" onclick="connectToAdmin()">ENTRAR ARA</button>
-        <p onclick="location.reload()" style="cursor:pointer; opacity:0.5; font-size:0.8rem; margin-top:20px;">← Tornar</p>
+        <input type="number" id="join-room-id" placeholder="Codi sala" style="padding:15px; border-radius:10px; border:none; margin-bottom:10px; width:250px; text-align:center;"><br>
+        <input type="text" id="join-name" placeholder="El teu nom" style="padding:15px; border-radius:10px; border:none; margin-bottom:20px; width:250px; text-align:center;"><br>
+        <button class="btn btn-draw" style="max-width:280px;" onclick="connectToAdmin()">ENTRAR ARA</button>
     </div>
 
     <div id="view-card" class="hidden">
-        <h3 id="player-info"></h3>
-        <div id="player-num" style="color: var(--accent); margin-bottom: 10px;"></div>
-        <div class="grid" id="grid-cartro"></div>
-        <button class="btn btn-secondary" style="margin-top: 25px;" onclick="resetCard()">Netejar cartró</button>
-    </div>
-
-    <div id="view-admin" class="hidden">
-        <p style="margin:0; opacity:0.7;">CODI DE SALA</p>
-        <div class="room-id" id="display-room-id">----</div>
-        <div id="active-song" style="background:white; color:#0f172a; padding:20px; border-radius:16px; font-size:1.5rem; font-weight:900; margin:15px 0;">A PUNT?</div>
-        
-        <div class="btn-group">
-            <button class="btn btn-main" style="background:var(--accent); color:white;" onclick="drawSong()">🎶 TREURE CANÇÓ</button>
-            <a id="spotify-link" href="https://open.spotify.com/playlist/1XBOgnvKTUstfXUoF090KP?si=WAXilHA_TN6INbLRzEMU2w&pi=05bW0uQPSTS5k&nd=1&dlsi=9981b11589d14167" target="_blank" class="btn btn-spotify">Anar a la llista Spotify</a>
-        </div>
-        
-        <div style="margin-top:30px; text-align:left; font-size:0.8rem; border-top:1px solid rgba(255,255,255,0.1); padding-top:20px;">
-            <strong>HISTORIAL:</strong> <span id="history-list" style="opacity:0.7;">Cap cançó encara</span>
-            <br><br>
-            <strong>JUGADORS (<span id="p-count">0</span>):</strong> <span id="p-list" style="opacity:0.7;">Cap encara</span>
-        </div>
+        <h3 id="player-info" style="margin:0"></h3>
+        <div id="player-num" style="color:var(--accent); margin-bottom:15px;"></div>
+        <div id="grid-cartro" style="display:grid; grid-template-columns: repeat(3, 1fr); gap:8px;"></div>
+        <button class="btn" style="background:rgba(255,255,255,0.1); color:white; margin-top:20px; font-size:0.7rem;" onclick="resetCard()">Netejar cartró</button>
     </div>
 
     <div class="footer-text">e1001 - 2025</div>
@@ -228,12 +205,14 @@
 
     function updateAdmin() {
         document.getElementById('p-count').innerText = players.length;
-        document.getElementById('p-list').innerText = players.join(", ");
-        document.getElementById('history-list').innerText = sortides.join(", ");
+        document.getElementById('p-list').innerHTML = players.map(p => `<span class="p-badge">${p}</span>`).join('');
+        
+        const histHTML = sortides.map((s, i) => `<div class="history-item"><strong>#${sortides.length - i}</strong>: ${s}</div>`).join('');
+        document.getElementById('history-list').innerHTML = histHTML || "Esperant...";
     }
 
     function drawSong() {
-        if(!bombo.length) return alert("Fi de la llista!");
+        if(!bombo.length) return alert("Fi!");
         currentSong = bombo.splice(Math.floor(Math.random()*bombo.length), 1)[0];
         sortides.unshift(currentSong);
         document.getElementById('active-song').innerText = currentSong;
@@ -243,7 +222,7 @@
     function connectToAdmin() {
         const rid = document.getElementById('join-room-id').value;
         const name = document.getElementById('join-name').value;
-        if(!rid || !name) return alert("Posa el codi i el nom");
+        if(!rid || !name) return alert("Falten dades");
         peer = new Peer();
         peer.on('open', () => {
             conn = peer.connect('QUINA-25-' + rid);
@@ -258,17 +237,18 @@
         const g = document.getElementById('grid-cartro'); g.innerHTML = '';
         cartrons[idx].forEach(c => {
             const div = document.createElement('div');
-            div.className = 'cell'; div.innerText = c;
+            div.style = "background:rgba(255,255,255,0.05); border-radius:10px; min-height:70px; display:flex; align-items:center; justify-content:center; font-size:0.7rem; padding:5px; font-weight:bold; cursor:pointer; border:1px solid rgba(255,255,255,0.1);";
+            div.innerText = c;
             div.onclick = () => {
-                div.classList.toggle('marked');
-                if(document.querySelectorAll('.cell.marked').length === 9) conn.send({type:'win', name: name});
+                div.style.background = div.style.background.includes('rgb(16, 185, 129)') ? 'rgba(255,255,255,0.05)' : '#10b981';
+                if([...g.children].filter(child => child.style.background.includes('rgb(16, 185, 129)')).length === 9) conn.send({type:'win', name: name});
             };
             g.appendChild(div);
         });
         showView('view-card');
     }
 
-    function resetCard() { document.querySelectorAll('.cell').forEach(c => c.classList.remove('marked')); }
+    function resetCard() { location.reload(); }
 </script>
 </body>
 </html>
